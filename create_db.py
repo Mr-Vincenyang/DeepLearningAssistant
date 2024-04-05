@@ -1,12 +1,25 @@
 # 首先导入所需第三方库
-from langchain.document_loaders import UnstructuredFileLoader
-from langchain.document_loaders import UnstructuredMarkdownLoader
+from langchain_community.document_loaders import UnstructuredFileLoader
+from langchain_community.document_loaders import UnstructuredMarkdownLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.vectorstores import Chroma
-from langchain.embeddings.huggingface import HuggingFaceEmbeddings
+from langchain_community.vectorstores import Chroma
+from langchain_community.embeddings.huggingface import HuggingFaceEmbeddings
+from langchain_core.documents import Document
 from tqdm import tqdm
 import os
-
+import pandas as pd
+def extract_data_from_excel(file_path):
+    try:
+        # 读取Excel文件
+        df = pd.read_excel(file_path)
+        
+        # # 提取第一列和第二列数据
+        # first_column_data = df.iloc[:, 0]  # 提取第一列数据
+        # second_column_data = df.iloc[:, 1]  # 提取第二列数据
+        return df
+    except Exception as e:
+        print("Error occurred while extracting data:", e)
+        return None, None
 # 获取文件路径函数
 def get_files(dir_path):
     # args：dir_path，目标文件夹路径
@@ -44,30 +57,28 @@ def get_text(dir_path):
 
 # 目标文件夹
 tar_dir = [
-    "/root/data/InternLM",
-    "/root/data/InternLM-XComposer",
-    "/root/data/lagent",
-    "/root/data/lmdeploy",
-    "/root/data/opencompass",
-    "/root/data/xtuner"
+    "./data.xlsx"
 ]
 
 # 加载目标文件
 docs = []
 for dir_path in tar_dir:
-    docs.extend(get_text(dir_path))
-
+    # docs.extend(get_text(dir_path))
+    result = extract_data_from_excel(dir_path)
+    for index, row in result.iterrows():
+        docs.append(Document(page_content=row.iloc[0], metadata={"discripte": row.iloc[0]+"的含义:"+row.iloc[1]}))
+# print(docs)
 # 对文本进行分块
 text_splitter = RecursiveCharacterTextSplitter(
     chunk_size=500, chunk_overlap=150)
 split_docs = text_splitter.split_documents(docs)
 
 # 加载开源词向量模型
-embeddings = HuggingFaceEmbeddings(model_name="/root/data/model/sentence-transformer")
+embeddings = HuggingFaceEmbeddings(model_name="/root/DeepLearningAssistant/model/sentence-transformer")
 
 # 构建向量数据库
 # 定义持久化路径
-persist_directory = 'data_base/vector_db/chroma'
+persist_directory = 'data_base/vector_db/DeepLearning'
 # 加载数据库
 vectordb = Chroma.from_documents(
     documents=split_docs,
