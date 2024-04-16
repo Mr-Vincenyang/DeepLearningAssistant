@@ -12,7 +12,6 @@ from langchain.retrievers.document_compressors.base import (
 )
 
 # copy from langchain.retrievers.ContextualCompressionRetriever
-# 可以替换假设问题为原始菜谱的Retriever
 class MyRetriever(BaseRetriever):
     """Retriever that wraps a base retriever and compresses the results."""
 
@@ -44,7 +43,7 @@ class MyRetriever(BaseRetriever):
         )
         if docs:
             for i in range(len(docs)):
-                # 取出metadata里存放的菜谱，并用菜谱替换掉page_content里保存的假设问题
+                 # 取出metadata里存放的名词解释，并用名词解释替换掉page_content里保存的名词名称
                 if "discripte" in docs[i].metadata:
                     docs[i].page_content = docs[i].metadata["discripte"]
                     docs[i].metadata = {}
@@ -72,7 +71,7 @@ class MyRetriever(BaseRetriever):
         )
         if docs:
             for i in range(len(docs)):
-                # 取出metadata里存放的菜谱，并用菜谱替换掉page_content里保存的假设问题
+                # 取出metadata里存放的名词解释，并用名词解释替换掉page_content里保存的名词名称
                 if "discripte" in docs[i].metadata:
                     docs[i].page_content = docs[i].metadata["discripte"]
                     docs[i].metadata = {}

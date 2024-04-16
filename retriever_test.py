@@ -9,12 +9,11 @@ vector_db = Chroma(
     embedding_function=embeddings
 )
 retriever = vector_db.as_retriever()
-myRetriever = MyRetriever(base_retriever = retriever)
+# myRetriever = MyRetriever(base_retriever = retriever)
 while True:
     tmp = input("请输入你想搜索的：")
     if tmp == 'exit':
         break
-    docs = myRetriever.get_relevant_documents(tmp)
+    docs = retriever.get_relevant_documents(tmp)
     # print(docs)
-    for doc in docs:
-        print(doc.page_content)
+    print(docs)
